@@ -1,0 +1,1 @@
+npm i fastify fastify-type-provider-zod zod @fastify/auth @fastify/autoload @fastify/cors @fastify/jwt @fastify/swagger @fastify/swagger-ui @prisma/client bcryptjs dotenv typescript @types/node tsx
