@@ -60,7 +60,7 @@ Encontre sessões, compare preços e compre ingressos de forma rápida e segura.
 - **Backend**: Node.js, Fastify, Prisma ORM, Docker, JWT, Bcrypt, Fastify Swagger.
 - **Banco de Dados**: PostgreSQL (versão 12).
 - **Infraestrutura**: Docker para orquestração.
-- **Testes**: Jest.
+- **Testes**: Vitest.
 - **Frontend**: Next.js, TailwindCSS.
 
 
