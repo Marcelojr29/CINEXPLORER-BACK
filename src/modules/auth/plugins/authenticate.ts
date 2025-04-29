@@ -1,6 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 
-export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+interface UserPayload {
+  id: string
+  email: string
+}
+
+export async function authenticate(request: FastifyRequest & { user?: UserPayload }, reply: FastifyReply) {
   try {
     const payload = await request.jwtVerify()
     request.user = payload
