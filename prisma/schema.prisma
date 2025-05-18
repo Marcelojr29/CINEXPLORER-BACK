@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -21,6 +20,7 @@ model Cinema {
   sessions Session[]
 
   @@map("cinemas")
+  Promotion Promotion[]
 }
 
 model Movie {
@@ -36,6 +36,7 @@ model Movie {
   sessions Session[]
 
   @@map("movies")
+  Promotion Promotion[]
 }
 
 model Session {
@@ -58,7 +59,10 @@ model Purchase {
   id String @id @default(uuid())
   sessionId String
   userEmail String
+  userCpf String?
   quantity Int
+  ticketTypeId String
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
   totalPrice Float
   createdAt DateTime @default(now())
   sessions Session @relation(fields: [sessionId], references: [id])
@@ -75,4 +79,35 @@ model Admin {
   updatedAt DateTime @updatedAt
 
   @@map("admins")
+}
+
+model TicketType {
+  id String @id @default(uuid())
+  name String
+  description String
+  discountPercentage Float
+  requiresProof Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ticket_types")
+  purchases Purchase[]
+}
+
+model Promotion {
+  id String @id @default(uuid())
+  name String
+  description String
+  discountPercentage Float
+  startDate DateTime
+  endDate DateTime
+  cinemaId String?
+  movieId String?
+  cinema Cinema? @relation(fields: [cinemaId], references: [id])
+  movie Movie? @relation(fields: [movieId], references: [id])
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("promotions")
 }

@@ -11,7 +11,9 @@ export async function purchaseRoutes(app: FastifyInstance) {
       body: z.object({
         sessionId: z.string().uuid(),
         userEmail: z.string().email(),
-        quantity: z.number().int().positive().max(10)
+        userCpf: z.string().optional(),
+        quantity: z.number().int().positive().max(10),
+        ticketTypeId: z.string().uuid()
       }),
       response: {
         201: z.object({
@@ -19,6 +21,10 @@ export async function purchaseRoutes(app: FastifyInstance) {
           sessionId: z.string().uuid(),
           userEmail: z.string().email(),
           quantity: z.number(),
+          ticketType: z.object({
+            name: z.string(),
+            discountPercentage: z.number()
+          }),
           totalPrice: z.number(),
           purchaseDate: z.string().datetime()
         }),
@@ -31,10 +37,12 @@ export async function purchaseRoutes(app: FastifyInstance) {
       }
     }
   }, async (request, reply) => {
-    const { sessionId, userEmail, quantity } = request.body as {
+    const { sessionId, userEmail, userCpf, quantity, ticketTypeId } = request.body as {
       sessionId: string
       userEmail: string
+      userCpf?: string
       quantity: number
+      ticketTypeId: string
     }
 
     // Verifica se a sessão existe
@@ -49,6 +57,14 @@ export async function purchaseRoutes(app: FastifyInstance) {
       return reply.status(404).send({ message: 'Session not found' })
     }
 
+    const ticketType = await prisma.ticketType.findUnique({
+      where: { id: ticketTypeId }
+    })
+
+    if (!ticketType) {
+      return reply.status(404).send({ message: 'Ticket type not found' })
+    }
+
     // Verifica se há assentos disponíveis (simulação de 50 assentos por sessão)
     const purchasedSeats = session.purchases.reduce((sum, purchase) => sum + purchase.quantity, 0)
     const availableSeats = 50 - purchasedSeats
@@ -57,17 +73,21 @@ export async function purchaseRoutes(app: FastifyInstance) {
       return reply.status(400).send({ message: `Not enough available seats. Only ${availableSeats} left.` })
     }
 
+    const discountedPrice = session.price * (1 - (ticketType.discountPercentage / 100))
+    const totalPrice = discountedPrice * quantity
+    
     // Cria a compra
-    const totalPrice = session.price * quantity
-    const purchaseId = randomUUID()
-
     const purchase = await prisma.purchase.create({
       data: {
-        id: purchaseId,
         sessionId,
         userEmail,
+        userCpf: userCpf || null,
         quantity,
+        ticketTypeId,
         totalPrice
+      },
+      include: {
+        ticketType: true
       }
     })
 
@@ -78,6 +98,10 @@ export async function purchaseRoutes(app: FastifyInstance) {
       sessionId: purchase.sessionId,
       userEmail: purchase.userEmail,
       quantity: purchase.quantity,
+      ticketType: {
+        name: purchase.ticketType.name,
+        discountPercentage: purchase.ticketType.discountPercentage
+      },
       totalPrice: purchase.totalPrice,
       purchaseDate: purchase.createdAt.toISOString()
     })

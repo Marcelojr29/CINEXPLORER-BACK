@@ -6,7 +6,7 @@
     "dev": "tsx watch src/http/server.ts",
     "build": "tsc",
     "start": "node dist/http/server.js",
-    "prisma-igrate": "prisma migrate dev",
+    "prisma-migrate": "prisma migrate dev",
     "prisma-studio": "prisma studio",
     "prisma-generate": "prisma generate",
     "prisma-seed": "tsx prisma/seed.ts",
@@ -36,6 +36,6 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.3"
   }
 }

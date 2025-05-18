@@ -36,16 +36,43 @@ app.register(fastifySwagger, {
         info: {
             title: 'cineXplorer API',
             description: 'API para gerenciamento de cinemas, sessões e compras de ingressos',
-            version: '1.0.0'
+            version: '1.0.0',
+            contact: {
+                name: 'Equipe cineXplorer',
+                email: 'suporte@cinexplorer.com'
+            },
+            license: {
+                name: 'MIT',
+                url: 'https://opensource.org/licenses/MIT'
+            }
         },
         components: {
             securitySchemes: {
                 bearerAuth: {
                     type: 'http',
                     scheme: 'bearer',
-                    bearerFormat: 'JWT'
+                    bearerFormat: 'JWT',
+                    description: 'Token JWT obtido no login'
+                }
+            },
+            schemas: {
+                Cinema: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'string', format: 'uuid' },
+                        name: { type: 'string', example: 'Cinema Shopping Fametro' },
+                        address: { type: 'string', example: 'Av. Constantino Nery, 4002' },
+                        city: { type: 'string', example: 'Manaus' },
+                        state: { type: 'string', example: 'AM' },
+                        latitude: { type: 'number', format: 'float', example: -3.117034 },
+                        longitude: { type: 'number', format: 'float', example: -60.025780 }
+                    }
                 }
             }
+        },
+        externalDocs: {
+            description: 'Documentação completa do projeto',
+            url: 'https://github.com/Marcelojr/CINEXPLORER-BACK'
         }
     },
     transform: jsonSchemaTransform
